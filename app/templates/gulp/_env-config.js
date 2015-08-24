@@ -11,7 +11,7 @@ gulp.task('env-config', function () {
     .pipe($.ngConstant({
       name: '<%- appName %>',
       deps: false,
-      dest: 'constants.config.js'
+      dest: 'EnvConstants.config.js'
     }))
     .pipe(gulp.dest('src/app'));
 });
