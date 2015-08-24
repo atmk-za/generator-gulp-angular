@@ -10,8 +10,8 @@ gulp.task('env-config', function () {
   return gulp.src('src/app/env-configs/config-' + environment + '.json')
     .pipe($.ngConstant({
       name: '<%- appName %>',
-      deps: false,
-      dest: 'EnvConstants.config.js'
+      deps: false
     }))
+    .pipe($.rename('envConstants.js'))
     .pipe(gulp.dest('src/app'));
 });
