@@ -1,10 +1,8 @@
 'use strict';
 
 var gulp = require('gulp');
-var fs = require('fs');
 var argv = require('yargs').argv;
 var $ = require('gulp-load-plugins')();
-
 
 var environment = argv.env || 'default';
 
