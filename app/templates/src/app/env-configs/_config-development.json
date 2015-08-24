@@ -1,0 +1,9 @@
+{
+  "ENV": {
+    "name": "dev",
+    "version": "1.0",
+    "api": {
+      "endpoint": "/api"
+    }
+  }
+}

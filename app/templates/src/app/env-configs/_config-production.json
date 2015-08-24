@@ -1,0 +1,9 @@
+{
+  "ENV": {
+    "name": "production",
+    "version": "1.0",
+    "api": {
+      "endpoint": "http://123.456.789.0/api/"
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "ENV": {
-    "name": "server",
+    "name": "default",
     "version": "1.0",
     "api": {
       "endpoint": "/api"
