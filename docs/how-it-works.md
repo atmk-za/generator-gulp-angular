@@ -56,7 +56,7 @@ The `scripts` task is launched at build, dev and test time and at the watch of a
 
 ### With no JS preprocessor
 
-When you don't have JS preprocessor, the `scripts` task goal is to pass the linter (currently JSHint) on your code.
+When you don't have JS preprocessor, the `scripts` task goal is to pass the linter (ESLint) on your code.
 
 ### With Coffee
 
@@ -77,7 +77,7 @@ As Webpack as a good watch feature, 2 tasks are produced: `scripts` and `scripts
 
 ## `gulp/styles.js`
 
-The `scripts` task is launched at build, dev and test time and at the watch of any change on a style file. It's this task which will trigger a Browser Sync reload when needed.
+The `styles` task is launched at build, dev and test time and at the watch of any change on a style file. It's this task which will trigger a Browser Sync reload when needed.
 
 This file exists only if you choose a style pre-processor.
 
@@ -155,7 +155,20 @@ The base directories for Browser Sync are `.tmp/serve` and `src` with a priority
 
 As the `bower_components` folder is not located in any of the base paths, a special routes is added for this folder to be addressed by `/bower_components`.
 
+The default Browser Sync port is `3000`, if you ever need to change it, head over to the [gulp/server.js](https://github.com/Swiip/generator-gulp-angular/blob/master/app/templates/gulp/_server.js#L42) file and add the `port` attribute to the *server* variable.
+Example below : 
+```javascript
+browserSync.instance = browserSync.init({
+    startPath: '/',
+    server: server,
+    browser: browser,
+    port: 4000 // Add this line to change the default port
+  });
+```
+
 Last configuration, the `browser` option is used to open the default browser to the root page.
+
+Head over to [Browser Sync list of options](http://www.browsersync.io/docs/options/) for the full list of available configurations for BrowserSync.
 
 ### Proxy
 

@@ -23,7 +23,7 @@ describe('gulp-angular karma.conf template', function () {
   });
 
   it('should add files in list files for each js preprocessors', function() {
-    model.props.jsPreprocessor.key = 'none';
+    model.props.jsPreprocessor.key = 'noJsPrepro';
     var result = karmaConf(model);
     result.should.match(/conf\.paths\.src, '[^\s]*\.module\.js'/);
     result.should.match(/conf\.paths\.src, '[^\s]*\.js'/);
@@ -32,6 +32,10 @@ describe('gulp-angular karma.conf template', function () {
     result = karmaConf(model);
     result.should.match(/conf\.paths\.tmp, '\/serve[^\s]*\.module\.js'/);
     result.should.match(/conf\.paths\.tmp, '\/serve[^\s]*\.js'/);
+
+    model.props.jsPreprocessor.key = 'typescript';
+    result = karmaConf(model);
+    result.should.match(/conf\.paths\.tmp, '\/serve\/app\/index\.module\.js/);
 
     model.props.jsPreprocessor.key = 'babel';
     result = karmaConf(model);
@@ -44,7 +48,7 @@ describe('gulp-angular karma.conf template', function () {
     result.should.match(/frameworks: \['jasmine'\]/);
     result.should.not.match(/'karma-angular-filesort'/);
 
-    model.props.jsPreprocessor.key = 'none';
+    model.props.jsPreprocessor.key = 'noJsPrepro';
     result = karmaConf(model);
     result.should.match(/frameworks: \['jasmine', 'angular-filesort'\]/);
     result.should.match(/whitelist: \[[^\s]*conf\.paths\.src/);
@@ -58,7 +62,7 @@ describe('gulp-angular karma.conf template', function () {
   });
 
   it('should replace phantom with chrome for traceur', function() {
-    model.props.jsPreprocessor.key = 'none';
+    model.props.jsPreprocessor.key = 'noJsPrepro';
     var result = karmaConf(model);
     result.should.match(/browsers : \['PhantomJS'\]/);
     result.should.match(/'karma-phantomjs-launcher'/);

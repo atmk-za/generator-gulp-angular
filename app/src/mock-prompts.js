@@ -46,12 +46,7 @@ model.angularModules.choices.forEach(function(choice) {
 });
 
 model.jQuery.choices.forEach(function(choice) {
-  var title = choice.name.substring(0, choice.name.indexOf(' ('));
-  var xIndex = choice.name.indexOf('.x');
-  if(xIndex > 0) {
-    title = title.substring(0, xIndex);
-  }
-  model.jQuery.values[title.toLowerCase()] = choice.value;
+  model.jQuery.values[choice.value.key] = choice.value;
 });
 
 model.resource.choices.forEach(function(choice) {
@@ -91,14 +86,14 @@ module.exports = {
   defaults: {
     angularVersion: model.angularVersion.values['1.4'],
     angularModules: _.pluck(model.angularModules.choices, 'value'),
-    jQuery: model.jQuery.values['jquery 2'],
+    jQuery: model.jQuery.values['jquery2'],
     resource: model.resource.values['angular-resource'],
     router: model.router.values['ui-router'],
     ui: model.ui.values.bootstrap,
     bootstrapComponents: model.bootstrapComponents.values['ui-bootstrap'],
-    foundationComponents: model.foundationComponents.values.none,
+    foundationComponents: model.foundationComponents.values.noFoundationComponents,
     cssPreprocessor: model.cssPreprocessor.values['node-sass'],
-    jsPreprocessor: model.jsPreprocessor.values.none,
-    htmlPreprocessor: model.htmlPreprocessor.values.none
+    jsPreprocessor: model.jsPreprocessor.values.noJsPrepro,
+    htmlPreprocessor: model.htmlPreprocessor.values.noHtmlPrepro
   }
 };

@@ -8,7 +8,7 @@ var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
-<% if (props.htmlPreprocessor.key === 'none') { -%>
+<% if (props.htmlPreprocessor.key === 'noHtmlPrepro') { -%>
 gulp.task('partials', function () {
 <% } else { -%>
 gulp.task('partials', ['markups'], function () {
@@ -48,18 +48,22 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe($.rev())
     .pipe(jsFilter)
     .pipe($.sourcemaps.init())
+<% if (props.jsPreprocessor.srcExtension !== 'es6' && props.jsPreprocessor.key !== 'typescript') { -%>
     .pipe($.ngAnnotate())
+<% } -%>
     .pipe($.uglify({ preserveComments: $.uglifySaveLicense })).on('error', conf.errorHandler('Uglify'))
     .pipe($.sourcemaps.write('maps'))
     .pipe(jsFilter.restore)
     .pipe(cssFilter)
     .pipe($.sourcemaps.init())
 <% if (props.ui.key === 'bootstrap' && props.cssPreprocessor.extension === 'scss') { -%>
-    .pipe($.replace('../<%- computedPaths.appToBower %>/bower_components/bootstrap-sass-official/assets/fonts/bootstrap/', '../fonts/'))
+    .pipe($.replace('../<%- computedPaths.appToBower %>/bower_components/bootstrap-sass/assets/fonts/bootstrap/', '../fonts/'))
 <% } else if (props.ui.key === 'bootstrap' && props.cssPreprocessor.extension === 'less') { -%>
     .pipe($.replace('../<%- computedPaths.appToBower %>/bower_components/bootstrap/fonts/', '../fonts/'))
 <% } else if (props.ui.key === 'bootstrap' && props.cssPreprocessor.extension === 'styl') { -%>
     .pipe($.replace('../<%- computedPaths.appToBower %>/bower_components/bootstrap-stylus/fonts/', '../fonts/'))
+<% } else if (props.ui.key === 'material-design-lite' || props.ui.key === 'angular-material') { -%>
+    .pipe($.replace('../<%- computedPaths.appToBower %>/bower_components/material-design-iconfont/iconfont/', '../fonts/'))
 <% } -%>
     .pipe($.minifyCss({ processImport: false }))
     .pipe($.sourcemaps.write('maps'))
@@ -96,6 +100,8 @@ gulp.task('images', function () {
 gulp.task('fonts', function () {
 <% if (props.ui.key === 'bootstrap' && props.cssPreprocessor.extension === 'styl') { -%>
   return gulp.src($.mainBowerFiles().concat('bower_components/bootstrap-stylus/fonts/*'))
+<% } else if (props.ui.key === 'material-design-lite' || props.ui.key === 'angular-material') { -%>
+  return gulp.src($.mainBowerFiles().concat('bower_components/material-design-iconfont/iconfont/*'))
 <% } else { -%>
   return gulp.src($.mainBowerFiles())
 <% } -%>
@@ -117,12 +123,12 @@ gulp.task('other', function () {
     .pipe(gulp.dest(path.join(conf.paths.dist, '/')));
 });
 
+gulp.task('clean', function () {
 <% if (props.jsPreprocessor.key === 'typescript') { -%>
-gulp.task('clean', ['tsd:purge'], function (done) {
+  return $.del([path.join(conf.paths.dist, '/'), path.join(conf.paths.tmp, '/partials'), path.join(conf.paths.tmp, '/serve')]);
 <% } else { -%>
-gulp.task('clean', function (done) {
+  return $.del([path.join(conf.paths.dist, '/'), path.join(conf.paths.tmp, '/')]);
 <% } -%>
-  $.del([path.join(conf.paths.dist, '/'), path.join(conf.paths.tmp, '/')], done);
 });
 
 <% if (imageMin) { -%>

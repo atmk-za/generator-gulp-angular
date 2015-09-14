@@ -16,7 +16,7 @@ module.exports = function(GulpAngularGenerator) {
 
       if (this.props.cssPreprocessor.extension === 'scss') {
 
-        bowerOverrides['bootstrap-sass-official'] = {
+        bowerOverrides['bootstrap-sass'] = {
           main: [
             'assets/stylesheets/_bootstrap.scss',
             'assets/fonts/bootstrap/glyphicons-halflings-regular.eot',
@@ -28,7 +28,7 @@ module.exports = function(GulpAngularGenerator) {
         };
 
         if (this.props.bootstrapComponents.key === 'official') {
-          bowerOverrides['bootstrap-sass-official'].main.unshift('assets/javascripts/bootstrap.js');
+          bowerOverrides['bootstrap-sass'].main.unshift('assets/javascripts/bootstrap.js');
         }
 
       } else {
@@ -49,13 +49,19 @@ module.exports = function(GulpAngularGenerator) {
 
       }
 
-      if (this.props.cssPreprocessor.key === 'none') {
+      if (this.props.cssPreprocessor.key === 'noCssPrepro') {
         bowerOverrides.bootstrap.main.unshift('dist/css/bootstrap.css');
       }
 
       if (this.props.cssPreprocessor.key === 'less') {
         bowerOverrides.bootstrap.main.unshift('less/bootstrap.less');
       }
+    }
+
+    if (this.props.router.key === 'new-router') {
+      bowerOverrides['angular-new-router'] = {
+        main: [ 'dist/router.es5.js' ]
+      };
     }
 
     if (_.isEmpty(bowerOverrides)) {
@@ -72,18 +78,18 @@ module.exports = function(GulpAngularGenerator) {
    */
   GulpAngularGenerator.prototype.computeWiredepExclusions = function computeWiredepExclusions() {
     this.wiredepExclusions = [];
-    if (this.props.jQuery.key === 'none' || this.props.jQuery.key === 'zepto') {
+    if (this.props.jQuery.key === 'jqLite' || this.props.jQuery.key === 'zepto') {
       this.wiredepExclusions.push('/jquery/');
     }
     if (this.props.ui.key === 'bootstrap') {
       if(this.props.bootstrapComponents.key !== 'official') {
-        this.wiredepExclusions.push('/bootstrap\.js$/');
+        this.wiredepExclusions.push('/\\\/bootstrap\\.js$/');
         if(this.props.cssPreprocessor.extension === 'scss') {
-          this.wiredepExclusions.push('/bootstrap-sass-official\\/.*\\.js/');
+          this.wiredepExclusions.push('/\\\/bootstrap-sass\\/.*\\.js/');
         }
       }
-      if(this.props.cssPreprocessor.key !== 'none') {
-        this.wiredepExclusions.push('/bootstrap\\.css/');
+      if(this.props.cssPreprocessor.key !== 'noCssPrepro') {
+        this.wiredepExclusions.push('/\\\/bootstrap\\.css/');
       }
     } else if (this.props.ui.key === 'foundation') {
       if(this.props.foundationComponents.key !== 'official') {

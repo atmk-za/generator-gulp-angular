@@ -5,39 +5,25 @@ var gulp = require('gulp');
 var conf = require('./conf');
 
 var browserSync = require('browser-sync');
-<% if (props.jsPreprocessor.srcExtension === 'es6') { -%>
+<% if (props.jsPreprocessor.srcExtension === 'es6' || props.jsPreprocessor.key === 'typescript') { -%>
 var webpack = require('webpack-stream');
 <% } -%>
 
 var $ = require('gulp-load-plugins')();
 
-<% if (props.jsPreprocessor.srcExtension !== 'es6') { -%>
-<%   if (props.jsPreprocessor.key === 'typescript') { -%>
-  var tsProject = $.typescript.createProject({
-    target: 'es5',
-    sortOutput: true
-  });
-
-  gulp.task('scripts', ['tsd:install'], function () {
-<%   } else { -%>
+<% if (props.jsPreprocessor.srcExtension !== 'es6' && props.jsPreprocessor.key !== 'typescript') { -%>
 gulp.task('scripts', function () {
-<%   } -%>
   return gulp.src(path.join(conf.paths.src, '/app/**/*.<%- props.jsPreprocessor.extension %>'))
 <%   if (props.jsPreprocessor.extension === 'js') { -%>
-    .pipe($.jshint())
-    .pipe($.jshint.reporter('jshint-stylish'))
-<%   } if (props.jsPreprocessor.key !== 'none') { -%>
+    .pipe($.eslint())
+    .pipe($.eslint.format())
+<%   } if (props.jsPreprocessor.key !== 'noJsPrepro') { -%>
     .pipe($.sourcemaps.init())
 <%   } if (props.jsPreprocessor.key === 'coffee') { -%>
     .pipe($.coffeelint())
     .pipe($.coffeelint.reporter())
     .pipe($.coffee()).on('error', conf.errorHandler('CoffeeScript'))
-<%   } if (props.jsPreprocessor.key === 'typescript') { -%>
-    .pipe($.tslint())
-    .pipe($.tslint.report('prose', { emitError: false }))
-    .pipe($.typescript(tsProject)).on('error', conf.errorHandler('TypeScript'))
-    .pipe($.concat('index.module.js'))
-<%   } if (props.jsPreprocessor.key !== 'none') { -%>
+<%   } if (props.jsPreprocessor.key !== 'noJsPrepro') { -%>
     .pipe($.sourcemaps.write())
     .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/app')))
 <%   } -%>
@@ -45,15 +31,24 @@ gulp.task('scripts', function () {
     .pipe($.size())
 });
 <% } else { -%>
-function webpackWrapper(watch, callback) {
+function webpackWrapper(watch, test, callback) {
   var webpackOptions = {
+<%   if (props.jsPreprocessor.key === 'typescript') { -%>
+    resolve: { extensions: ['', '.ts'] },
+<%   } -%>
     watch: watch,
     module: {
-      preLoaders: [{ test: /\.js$/, exclude: /node_modules/, loader: 'jshint-loader'}],
+<%   if (props.jsPreprocessor.extension === 'js') { -%>
+      preLoaders: [{ test: /\.js$/, exclude: /node_modules/, loader: 'eslint-loader'}],
+<%   } if (props.jsPreprocessor.key === 'typescript') { -%>
+      preLoaders: [{ test: /\.ts$/, exclude: /node_modules/, loader: 'tslint-loader'}],
+<%   } -%>
 <%   if (props.jsPreprocessor.key === 'babel') { -%>
-      loaders: [{ test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'}]
+      loaders: [{ test: /\.js$/, exclude: /node_modules/, loaders: ['ng-annotate', 'babel-loader']}]
 <%   } if (props.jsPreprocessor.key === 'traceur') { -%>
-      loaders: [{ test: /\.js$/, exclude: /node_modules/, loader: 'traceur-loader'}]
+      loaders: [{ test: /\.js$/, exclude: /node_modules/, loaders: ['ng-annotate', 'traceur-loader']}]
+<%   } if (props.jsPreprocessor.key === 'typescript') { -%>
+      loaders: [{ test: /\.ts$/, exclude: /node_modules/, loaders: ['ng-annotate', 'awesome-typescript-loader']}]
 <%   } -%>
     },
     output: { filename: 'index.module.js' }
@@ -80,16 +75,29 @@ function webpackWrapper(watch, callback) {
     }
   };
 
-  return gulp.src(path.join(conf.paths.src, '/app/index.module.js'))
+  var sources = [ path.join(conf.paths.src, '/app/index.module.<%- props.jsPreprocessor.extension %>') ];
+  if (test) {
+    sources.push(path.join(conf.paths.src, '/app/**/*.spec.<%- props.jsPreprocessor.extension %>'));
+  }
+
+  return gulp.src(sources)
     .pipe(webpack(webpackOptions, null, webpackChangeHandler))
     .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/app')));
 }
 
 gulp.task('scripts', function () {
-  return webpackWrapper(false);
+  return webpackWrapper(false, false);
 });
 
 gulp.task('scripts:watch', ['scripts'], function (callback) {
-  return webpackWrapper(true, callback);
+  return webpackWrapper(true, false, callback);
+});
+
+gulp.task('scripts:test', function () {
+  return webpackWrapper(false, true);
+});
+
+gulp.task('scripts:test-watch', ['scripts'], function (callback) {
+  return webpackWrapper(true, true, callback);
 });
 <% } -%>

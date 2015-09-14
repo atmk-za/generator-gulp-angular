@@ -50,6 +50,22 @@
         },
         "name": "angular-sanitize.js (to securely parse and manipulate HTML)",
         "checked": true
+      },
+      {
+        "value": {
+          "key": "messages",
+          "module": "ngMessages"
+        },
+        "name": "angular-messages.js (enhanced support for displaying messages within templates)",
+        "checked": true
+      },
+      {
+        "value": {
+          "key": "aria",
+          "module": "ngAria"
+        },
+        "name": "angular-aria.js (support for common ARIA attributes)",
+        "checked": true
       }
     ]
   },
@@ -78,7 +94,7 @@
       },
       {
         "value": {
-          "key": "none"
+          "key": "jqLite"
         },
         "name": "None (Angular will use its own jqLite)"
       }
@@ -105,7 +121,7 @@
       },
       {
         "value": {
-          "key": "none",
+          "key": "$http",
           "module": null
         },
         "name": "None, $http is enough!"
@@ -133,7 +149,14 @@
       },
       {
         "value": {
-          "key": "none",
+          "key": "new-router",
+          "module": "ngNewRouter"
+        },
+        "name": "Angular 2 new router which is compatible with Angular 1 (experimental)"
+      },
+      {
+        "value": {
+          "key": "noRouter",
           "module": null
         },
         "name": "None"
@@ -161,6 +184,13 @@
       },
       {
         "value": {
+          "key": "material-design-lite",
+          "module": null
+        },
+        "name": "Material Design Lite, add a Material Design look and feel to your websites."
+      },
+      {
+        "value": {
           "key": "foundation",
           "module": null
         },
@@ -168,7 +198,7 @@
       },
       {
         "value": {
-          "key": "none",
+          "key": "noUI",
           "module": null
         },
         "name": "None"
@@ -203,7 +233,7 @@
       },
       {
         "value": {
-          "key": "none",
+          "key": "noBootstrapComponents",
           "module": null
         },
         "name": "No JavaScript, just CSS"
@@ -231,7 +261,7 @@
       },
       {
         "value": {
-          "key": "none",
+          "key": "noFoundationComponents",
           "module": null
         },
         "name": "No JavaScript, just CSS"
@@ -273,7 +303,7 @@
       },
       {
         "value": {
-          "key": "none",
+          "key": "noCssPrepro",
           "extension": "css"
         },
         "name": "None, only the good old CSS"
@@ -287,7 +317,7 @@
     "choices": [
       {
         "value": {
-          "key": "none",
+          "key": "noJsPrepro",
           "extension": "js",
           "srcExtension": "js"
         },
@@ -334,7 +364,7 @@
     "choices": [
       {
         "value": {
-          "key": "none",
+          "key": "noHtmlPrepro",
           "extension": "html"
         },
         "name": "None, I like to code in standard HTML."

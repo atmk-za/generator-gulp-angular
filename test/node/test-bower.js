@@ -28,7 +28,8 @@ describe('gulp-angular generator bower script', function () {
 
     it('should return null if bootstrap is not selected', function() {
       generator.props = {
-        ui: { key: 'notbootstrap' }
+        ui: { key: 'notbootstrap' },
+        router: { key: 'notnewrouter' }
       };
       generator.prepareBowerOverrides();
       expect(generator.bowerOverrides).to.be.null;
@@ -38,7 +39,8 @@ describe('gulp-angular generator bower script', function () {
       generator.props = {
         ui: { key: 'bootstrap' },
         bootstrapComponents: { key: 'official' },
-        cssPreprocessor: { key: 'something' }
+        cssPreprocessor: { key: 'something' },
+        router: { key: 'notnewrouter' }
       };
       generator.prepareBowerOverrides();
       var bootstrapMain = JSON.parse(generator.bowerOverrides).bootstrap.main;
@@ -51,7 +53,8 @@ describe('gulp-angular generator bower script', function () {
       generator.props = {
         ui: { key: 'bootstrap' },
         bootstrapComponents: { key: 'something' },
-        cssPreprocessor: { key: 'none' }
+        cssPreprocessor: { key: 'noCssPrepro' },
+        router: { key: 'notnewrouter' }
       };
       generator.prepareBowerOverrides();
       var bootstrapMain = JSON.parse(generator.bowerOverrides).bootstrap.main;
@@ -64,10 +67,11 @@ describe('gulp-angular generator bower script', function () {
       generator.props = {
         ui: { key: 'bootstrap' },
         bootstrapComponents: { key: 'official' },
-        cssPreprocessor: { key: 'notnone', extension: 'scss' }
+        cssPreprocessor: { key: 'notnone', extension: 'scss' },
+        router: { key: 'notnewrouter' }
       };
       generator.prepareBowerOverrides();
-      var bootstrapMain = JSON.parse(generator.bowerOverrides)['bootstrap-sass-official'].main;
+      var bootstrapMain = JSON.parse(generator.bowerOverrides)['bootstrap-sass'].main;
       bootstrapMain.length.should.be.equal(7);
       var first = bootstrapMain.shift();
       first.should.match(/bootstrap\.js/);
@@ -80,10 +84,11 @@ describe('gulp-angular generator bower script', function () {
       generator.props = {
         ui: { key: 'bootstrap' },
         bootstrapComponents: { key: 'something' },
-        cssPreprocessor: { key: 'notnone', extension: 'scss' }
+        cssPreprocessor: { key: 'notnone', extension: 'scss' },
+        router: { key: 'notnewrouter' }
       };
       generator.prepareBowerOverrides();
-      var bootstrapMain = JSON.parse(generator.bowerOverrides)['bootstrap-sass-official'].main;
+      var bootstrapMain = JSON.parse(generator.bowerOverrides)['bootstrap-sass'].main;
       bootstrapMain.length.should.be.equal(6);
       var first = bootstrapMain.shift();
       first.should.match(/_bootstrap\.scss/);
@@ -94,7 +99,8 @@ describe('gulp-angular generator bower script', function () {
       generator.props = {
         ui: { key: 'bootstrap' },
         bootstrapComponents: { key: 'something' },
-        cssPreprocessor: { key: 'less' }
+        cssPreprocessor: { key: 'less' },
+        router: { key: 'notnewrouter' }
       };
       generator.prepareBowerOverrides();
       var bootstrapMain = JSON.parse(generator.bowerOverrides).bootstrap.main;
@@ -103,15 +109,28 @@ describe('gulp-angular generator bower script', function () {
       allFonts(bootstrapMain);
     });
 
+    it('should add new router js file', function() {
+      generator.props = {
+        ui: { key: 'notbootstrap' },
+        router: { key: 'new-router' }
+      };
+      generator.prepareBowerOverrides();
+      var routerMain = JSON.parse(generator.bowerOverrides)['angular-new-router'].main;
+      var first = routerMain.shift();
+      first.should.match(/router\.es5\.js/);
+    });
+
     it('should keep indent in bower.json', function() {
       generator.props = {
         ui: { key: 'bootstrap' },
         bootstrapComponents: { key: 'something' },
-        cssPreprocessor: { key: 'something' }
+        cssPreprocessor: { key: 'something' },
+        router: { key: 'notnewrouter' }
       };
       generator.prepareBowerOverrides();
       generator.bowerOverrides.should.match(/^{.*\n {4}/);
     });
+
   });
 
   describe('select wiredep exclusions depending the choices', function () {
@@ -119,25 +138,25 @@ describe('gulp-angular generator bower script', function () {
       generator.props = {
         jQuery: { key: 'jquery1' },
         ui: { key: 'bootstrap' },
-        bootstrapComponents: { key: 'angular-bootstrap' },
+        bootstrapComponents: { key: 'ui-bootstrap' },
         cssPreprocessor: { extension: 'scss' }
       };
       generator.computeWiredepExclusions();
-      generator.wiredepExclusions[0].should.be.equal('/bootstrap\.js$/');
-      generator.wiredepExclusions[1].should.be.equal('/bootstrap-sass-official\\/.*\\.js/');
-      generator.wiredepExclusions[2].should.be.equal('/bootstrap\\.css/');
+      generator.wiredepExclusions[0].should.be.equal('/\\/bootstrap\\.js$/');
+      generator.wiredepExclusions[1].should.be.equal('/\\/bootstrap-sass\\/.*\\.js/');
+      generator.wiredepExclusions[2].should.be.equal('/\\/bootstrap\\.css/');
     });
 
     it('should exclude only bootstrap.js if angular-boostrap and less', function() {
       generator.props = {
         jQuery: { key: 'jquery1' },
         ui: { key: 'bootstrap' },
-        bootstrapComponents: { key: 'angular-bootstrap' },
+        bootstrapComponents: { key: 'ui-bootstrap' },
         cssPreprocessor: { extension: 'less' }
       };
       generator.computeWiredepExclusions();
-      generator.wiredepExclusions[0].should.be.equal('/bootstrap\.js$/');
-      generator.wiredepExclusions[1].should.be.equal('/bootstrap\\.css/');
+      generator.wiredepExclusions[0].should.be.equal('/\\/bootstrap\\.js$/');
+      generator.wiredepExclusions[1].should.be.equal('/\\/bootstrap\\.css/');
     });
 
     it('should exclude foundation if foundation and sass', function() {
@@ -166,7 +185,7 @@ describe('gulp-angular generator bower script', function () {
     it('should exclude nothing if no ui', function() {
       generator.props = {
         jQuery: { key: 'jquery1' },
-        ui: { key: 'none' }
+        ui: { key: 'noUI' }
       };
       generator.computeWiredepExclusions();
       generator.wiredepExclusions.length.should.be.equal(0);
@@ -177,7 +196,7 @@ describe('gulp-angular generator bower script', function () {
         jQuery: { key: 'jquery1' },
         ui: { key: 'bootstrap' },
         bootstrapComponents: { key: 'official' },
-        cssPreprocessor: { key: 'none' }
+        cssPreprocessor: { key: 'noCssPrepro' }
       };
       generator.computeWiredepExclusions();
       generator.wiredepExclusions.length.should.be.equal(0);
@@ -188,7 +207,7 @@ describe('gulp-angular generator bower script', function () {
         jQuery: { key: 'jquery1' },
         ui: { key: 'foundation' },
         foundationComponents: { key: 'official' },
-        cssPreprocessor: { key: 'none' }
+        cssPreprocessor: { key: 'noCssPrepro' }
       };
       generator.computeWiredepExclusions();
       generator.wiredepExclusions.length.should.be.equal(0);
@@ -196,10 +215,10 @@ describe('gulp-angular generator bower script', function () {
 
     it('should exclude jQuery if select "None"', function() {
       generator.props = {
-        jQuery: { key: 'none' },
+        jQuery: { key: 'jqLite' },
         ui: { key: 'foundation' },
         foundationComponents: { key: 'official' },
-        cssPreprocessor: { key: 'none' }
+        cssPreprocessor: { key: 'noCssPrepro' }
       };
       generator.computeWiredepExclusions();
       generator.wiredepExclusions[0].should.be.equal('/jquery/');
@@ -210,7 +229,7 @@ describe('gulp-angular generator bower script', function () {
         jQuery: { key: 'zepto' },
         ui: { key: 'foundation' },
         foundationComponents: { key: 'official' },
-        cssPreprocessor: { key: 'none' }
+        cssPreprocessor: { key: 'noCssPrepro' }
       };
       generator.computeWiredepExclusions();
       generator.wiredepExclusions[0].should.be.equal('/jquery/');
